@@ -2,6 +2,12 @@ import { Point } from "../domain/spacial";
 import { ArenaSettings } from "../dto";
 import { sharkRest } from "../utility/comms";
 
+type CreateTorpedo = {
+    firingSharkId: string
+    startingPosition: Point
+    direction: number
+}
+
 type DevClientSettings = {
     host: string
     arenaId: string
@@ -11,6 +17,16 @@ type SharkToPosition = {
     sharkId: string
     centerPoint: Point
     facingAngle: number
+}
+
+type SetMarker = {
+    lifeSpan: number
+    position: Point
+}
+
+type SetSharkStatus = {
+    sharkId: string
+    statusText: string
 }
 
 export class DevClient {
@@ -43,6 +59,31 @@ export class DevClient {
         }));
     }
 
+    public createTorpedo(torpedo: CreateTorpedo) {
+        return this.requireDevelopment(() => sharkRest({
+            uri: `${this.host}development/create-torpedo`,
+            verb: 'POST',
+            body: { 
+                arenaId: this.arenaId, 
+                positionX: torpedo.startingPosition.x,
+                positionY: torpedo.startingPosition.y,
+                direction: torpedo.direction,
+                firingSharkId: torpedo.firingSharkId 
+            }
+        }));
+    }
+
+    public makeSharksDead(sharkIds: string[]) {
+        return this.requireDevelopment(() => sharkRest({
+            uri: `${this.host}development/sharks/make-dead`,
+            verb: 'POST',
+            body: { 
+                arenaId: this.arenaId,
+                sharkIds
+            }
+        }));
+    }
+
     public positionShark(position: SharkToPosition) {
         return this.requireDevelopment(() => sharkRest({
             uri: `${this.host}development/sharks/position`,
@@ -67,6 +108,119 @@ export class DevClient {
             verb: 'POST',
             body: { 
                 arenaId: this.arenaId 
+            }
+        }));
+    }
+
+    public reviveSharks(sharkIds: string[]) {
+        return this.requireDevelopment(() => sharkRest({
+            uri: `${this.host}development/sharks/revive`,
+            verb: 'PUT',
+            body: { 
+                arenaId: this.arenaId,
+                sharkIds
+            }
+        }));
+    }
+
+    public setMarker(marker: SetMarker) {
+        return this.requireDevelopment(() => sharkRest({
+            uri: `${this.host}development/marker`,
+            verb: 'POST',
+            body: { 
+                arenaId: this.arenaId,
+                lifeSpan: marker.lifeSpan,
+                x: marker.position.x,
+                y: marker.position.y 
+            }
+        }));
+    }
+
+    public setSharkStatus(status: SetSharkStatus) {
+        return this.requireDevelopment(() => sharkRest({
+            uri: `${this.host}development/spectator-shark-status`,
+            verb: 'PUT',
+            body: { 
+                arenaId: this.arenaId,
+                sharkId: status.sharkId,
+                status: status.statusText 
+            }
+        }));
+    }
+
+    public tweakLaserHitHealthToll(toll: number) {
+        return this.requireDevelopment(() => sharkRest({
+            uri: `${this.host}development/tweak`,
+            verb: 'PUT',
+            body: { 
+                arenaId: this.arenaId, 
+                tweakLaserHitHealthToll: toll
+            }
+        }));
+    }
+
+    public tweakLaserEnergyToll(toll: number) {
+        return this.requireDevelopment(() => sharkRest({
+            uri: `${this.host}development/tweak`,
+            verb: 'PUT',
+            body: { 
+                arenaId: this.arenaId, 
+                laserEnergyToll: toll
+            }
+        }));
+    }
+
+    public tweakMaxDeathTimePenalty(beats: number) {
+        return this.requireDevelopment(() => sharkRest({
+            uri: `${this.host}development/tweak`,
+            verb: 'PUT',
+            body: { 
+                arenaId: this.arenaId, 
+                maxDeathTimePenalty: beats
+            }
+        }));
+    }
+
+    public tweakMaxEnergy(toll: number) {
+        return this.requireDevelopment(() => sharkRest({
+            uri: `${this.host}development/tweak`,
+            verb: 'PUT',
+            body: { 
+                arenaId: this.arenaId, 
+                maxEnergy: toll
+            }
+        }));
+    }    
+
+    public tweakMaxHealth(maxHealth: number) {
+        return this.requireDevelopment(() => sharkRest({
+            uri: `${this.host}development/tweak`,
+            verb: 'PUT',
+            body: { 
+                arenaId: this.arenaId, 
+                maxHealth: maxHealth
+            }
+        }));
+    }
+
+    public tweakPointsPerLivingBeat(pointsPerLivingBeat: number) {
+        return this.requireDevelopment(() => sharkRest({
+            uri: `${this.host}development/tweak`,
+            verb: 'PUT',
+            body: { 
+                arenaId: this.arenaId, 
+                tweakPointsPerLivingBeat: pointsPerLivingBeat
+            }
+        }));
+    }
+
+    public tweakTorpedoRegenFrequency(frequency: number) {
+        return this.requireDevelopment(() => sharkRest({
+            uri: `${this.host}development/tweak`,
+            verb: 'PUT',
+            body: { 
+                arenaId: this.arenaId, 
+                torpedoRegenFrequency: frequency
             }
         }));
     }

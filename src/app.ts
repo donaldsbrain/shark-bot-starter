@@ -2,11 +2,12 @@ import { ArenaClient } from "./clients/arena";
 import { startBot1 } from "./bots/bot1";
 import { PlayerClient } from "./clients/player";
 import { DevClient } from "./clients/dev";
+import { startBot2 } from "./bots/bot2";
 
 const host = 'http://localhost:3000/';
 
 const devSettings = {
-    countdownToStart: 12*10,
+    countdownToStart: 12*20,
     gameLength: 12*60
 }
 
@@ -52,9 +53,13 @@ const startOverWithExisting = (host: string, arenaId: string, playerIds: string[
                 host
             }).then(devClient => {
                 devClient.resetArena();
-                devClient.clockSlowDown(1);
+                devClient.clockSlowDown(1);                
                 playerClients
-                    .forEach(pc => startBot1(pc, devClient));                
+                    .forEach((pc,i) => {
+                        if (i < 7) {
+                            startBot1(pc, devClient)
+                        }
+                    });                    
             })
         })
 }
@@ -71,14 +76,18 @@ const startOverWithExisting = (host: string, arenaId: string, playerIds: string[
 // ])
 
 createDevelopmentArenaWithBots(host)
-    .then(arenaCreated => 
-        arenaCreated.playersCreated.map(player => PlayerClient.create({
-            host,
-            arenaId: arenaCreated.arenaId,
-            playerId: player.playerId
-        })        
-        .then(playerClient => DevClient.create({
+    .then(arenaCreated => {
+        DevClient.create({
             arenaId: arenaCreated.arenaId,
             host
-        }).then(devClient => startBot1(playerClient, devClient) ))));
+        }).then(devClient => {
+            // devClient.tweakTorpedoRegenFrequency(1);
+            // devClient.tweakLaserEnergyToll(-1);
+            return Promise.all(arenaCreated.playersCreated.map(player => PlayerClient.create({
+                host,
+                arenaId: arenaCreated.arenaId,
+                playerId: player.playerId
+            }).then(playerClient => startBot1(playerClient, devClient))))
+        })
+    })
     

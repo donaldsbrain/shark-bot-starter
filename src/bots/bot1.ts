@@ -1,5 +1,6 @@
 import { DevClient } from "../clients/dev";
 import { PlayerClient } from "../clients/player";
+import { getAngleToPoint } from "../domain/spacial";
 import { ArenaSettings, BeatUpdate, DeadBeatUpdate } from "../dto";
 
 export function startBot1(client: PlayerClient, devClient: DevClient) {
@@ -50,6 +51,20 @@ function handleUpdates(
                 client.setFinSpeed({port:-5,starboard:-5});
             }
         }
+        if (update.positionX < 0 
+            || update.positionX > settings.dimensions.width 
+            || update.positionY < 0
+            || update.positionY > settings.dimensions.height) {
+                const newPoint = {
+                    x: Math.random() * settings.dimensions.width,
+                    y: Math.random() * settings.dimensions.height
+                };
+                const facingCenter = getAngleToPoint(newPoint, {x:settings.dimensions.width/2, y:settings.dimensions.height/2});
+                devClient.positionShark({
+                    sharkId: update.sharkId,                    
+                    facingAngle: facingCenter,
+                    centerPoint: newPoint})
+            }
     }
 
     function deadUpdate(deadUpdate: DeadBeatUpdate | BeatUpdate) {
