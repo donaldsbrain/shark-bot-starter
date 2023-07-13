@@ -22,6 +22,7 @@ type SharkToPosition = {
 type SetMarker = {
     lifeSpan: number
     position: Point
+    sharkId?: string
 }
 
 type SetSharkStatus = {
@@ -131,7 +132,8 @@ export class DevClient {
                 arenaId: this.arenaId,
                 lifeSpan: marker.lifeSpan,
                 x: marker.position.x,
-                y: marker.position.y 
+                y: marker.position.y,
+                sharkId: marker.sharkId
             }
         }));
     }

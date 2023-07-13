@@ -14,13 +14,13 @@ const devSettings = {
 const createPlayers = (arenaId: string, arenaClient: ArenaClient) => 
     arenaClient.createPlayers(arenaId, [
         'Bot 1',
-        'Bot 2',
-        'Bot 3',
-        'Bot 4',
-        'Bot 5',
-        'Bot 6',
-        'Bot 7',
-        'Bot 8'
+        // 'Bot 2',
+        // 'Bot 3',
+        // 'Bot 4',
+        // 'Bot 5',
+        // 'Bot 6',
+        // 'Bot 7',
+        // 'Bot 8'
     ]);
 
 

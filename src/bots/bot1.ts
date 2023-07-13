@@ -50,6 +50,11 @@ function handleUpdates(
             if (mod === 12) {
                 client.setFinSpeed({port:-5,starboard:-5});
             }
+            devClient.setMarker({
+                lifeSpan:12,
+                position: {x:update.positionX,y:update.positionY},
+                sharkId: update.sharkId
+            })
         }
         if (update.positionX < 0 
             || update.positionX > settings.dimensions.width 
