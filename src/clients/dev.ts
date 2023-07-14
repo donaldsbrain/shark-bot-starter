@@ -2,6 +2,11 @@ import { Point } from "../domain/spacial";
 import { ArenaSettings } from "../dto";
 import { sharkRest } from "../utility/comms";
 
+type AwardPoints = {
+    sharkId: string
+    points: number
+}
+
 type CreateTorpedo = {
     firingSharkId: string
     startingPosition: Point
@@ -47,6 +52,20 @@ export class DevClient {
         } else {
             return Promise.reject('This action is only valid for arenas of type "development".');
         }
+    }
+
+    public awardPoints(award: AwardPoints) {
+        return this.requireDevelopment(() => sharkRest({
+            uri: `${this.host}development/sharks/award-points`,
+            verb: 'PUT',
+            body: { 
+                arenaId: this.arenaId, 
+                sharks: [{
+                    sharkId: award.sharkId,
+                    points: award.points 
+                }]
+            }
+        }));
     }
 
     public clockSlowDown(rate: number) {
@@ -211,7 +230,7 @@ export class DevClient {
             verb: 'PUT',
             body: { 
                 arenaId: this.arenaId, 
-                tweakPointsPerLivingBeat: pointsPerLivingBeat
+                pointsPerLivingBeat: pointsPerLivingBeat
             }
         }));
     }

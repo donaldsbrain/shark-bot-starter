@@ -3,18 +3,20 @@ import { startBot1 } from "./bots/bot1";
 import { PlayerClient } from "./clients/player";
 import { DevClient } from "./clients/dev";
 import { startBot2 } from "./bots/bot2";
+import { startBot3 } from "./bots/bot3";
+import { startBot3a } from "./bots/bot3a";
 
 const host = 'http://localhost:3000/';
 
 const devSettings = {
-    countdownToStart: 12*20,
-    gameLength: 12*60
+    countdownToStart: 12*10,
+    gameLength: 12*60*2
 }
 
 const createPlayers = (arenaId: string, arenaClient: ArenaClient) => 
     arenaClient.createPlayers(arenaId, [
-        'Bot 1',
-        // 'Bot 2',
+        'Perfect',
+        'Hurry',
         // 'Bot 3',
         // 'Bot 4',
         // 'Bot 5',
@@ -81,13 +83,19 @@ createDevelopmentArenaWithBots(host)
             arenaId: arenaCreated.arenaId,
             host
         }).then(devClient => {
+            devClient.tweakPointsPerLivingBeat(0);            
             // devClient.tweakTorpedoRegenFrequency(1);
             // devClient.tweakLaserEnergyToll(-1);
-            return Promise.all(arenaCreated.playersCreated.map(player => PlayerClient.create({
+            return Promise.all(arenaCreated.playersCreated.map((player, i) => PlayerClient.create({
                 host,
                 arenaId: arenaCreated.arenaId,
                 playerId: player.playerId
-            }).then(playerClient => startBot1(playerClient, devClient))))
+            }).then(playerClient => {
+                if (i === 0)
+                    startBot3(playerClient, devClient)
+                else
+                    startBot3a(playerClient, devClient)
+            })))
         })
     })
     

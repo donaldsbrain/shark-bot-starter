@@ -5,7 +5,8 @@ function normalizeAngle(theAngle: number): number {
 }
 
 export type NextMove = {
-    finSpeed: {port: number, starboard: number}    
+    finSpeed: {port: number, starboard: number}
+    moreMovesRequired: boolean
 }
 
 export type Point = {
@@ -13,9 +14,9 @@ export type Point = {
     y: number
 }
 
-export function getAngleDifference(source: number, target: number) {    
+export function getAngleDifference(source: number, target: number) { 
     const diff = normalizeAngle(target) - normalizeAngle(source);
-    return diff <= Math.PI ? diff : Math.PI - diff;
+    return diff <= Math.PI ? diff : diff - Math.PI * 2;
 }
 
 export function getAngleToPoint(
@@ -29,4 +30,32 @@ export function getAngleToPoint(
 
 export const getDistance = (a: Point, b: Point) => {
     return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+}
+
+export const getNextMoveToAngle = (
+    currentFacingAngle: number, 
+    targetFacingAngle: number, 
+    maxFinSpeed: number, 
+    minFinSpeed: number): NextMove => {
+
+    const diff = getAngleDifference(currentFacingAngle, targetFacingAngle);
+    const absMaxFinSpeed = Math.min(maxFinSpeed, Math.abs(minFinSpeed));
+    const maxAngleChange = absMaxFinSpeed / 5;
+    if (diff > maxAngleChange) {
+        return {
+            moreMovesRequired: true,
+            finSpeed: {port: absMaxFinSpeed, starboard: -absMaxFinSpeed}
+        }
+    } else if (diff < -maxAngleChange) {
+        return {
+            moreMovesRequired: true,
+            finSpeed: {port: -absMaxFinSpeed, starboard: absMaxFinSpeed}
+        }
+    } else {
+        const port = (diff / maxAngleChange) * absMaxFinSpeed;
+        return {
+            moreMovesRequired: false,
+            finSpeed: {port, starboard: -port}
+        }
+    }
 }
