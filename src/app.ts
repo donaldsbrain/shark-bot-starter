@@ -6,6 +6,7 @@ import { startBot2 } from "./bots/bot2";
 import { startBot3 } from "./bots/bot3";
 import { startBot3a } from "./bots/bot3a";
 import { startBot4 } from "./bots/bot4";
+import { startBot5 } from "./bots/bot5";
 
 const host = 'http://localhost:3000/';
 
@@ -16,8 +17,8 @@ const devSettings = {
 
 const createPlayers = (arenaId: string, arenaClient: ArenaClient) => 
     arenaClient.createPlayers(arenaId, [
-        'Bot 1',
-        // 'Hurry',
+        'Defender',
+        'Attacker',
         // 'Bot 3',
         // 'Bot 4',
         // 'Bot 5',
@@ -91,12 +92,9 @@ createDevelopmentArenaWithBots(host)
                 host,
                 arenaId: arenaCreated.arenaId,
                 playerId: player.playerId
-            }).then(playerClient => {
-                if (i === 0)
-                    startBot4(playerClient, devClient)
-                else
-                    startBot3a(playerClient, devClient)
-            })))
+            }))).then(playerClients => {
+                startBot5(playerClients[0], playerClients[1], devClient);
+            })
         })
     })
     

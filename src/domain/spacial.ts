@@ -34,6 +34,17 @@ export const getDistance = (a: Point, b: Point) => {
     return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
 }
 
+export const getNewPosition = (oldPosition: Point, directionAngle: number, distance: number) => {
+    const deltaY =
+        Math.sin(Math.PI * 0.5 - directionAngle) * distance;
+    const deltaX =
+        Math.cos(Math.PI * 0.5 - directionAngle) * distance;
+    return {
+        x: oldPosition.x + deltaX,
+        y: oldPosition.y + deltaY,
+    };
+}
+
 export const getNextMoveToAngle = (
     currentFacingAngle: number, 
     targetFacingAngle: number, 

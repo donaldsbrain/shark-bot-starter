@@ -9,7 +9,7 @@ export type SharkMode = 'attack' | 'repair' | 'stealth';
 
 export type BeatEvent = LaserFiredEvent | TorpedoDetonatedEvent | TorpedoLostEvent | NarrowScanExecutedEvent | WideScanExecutedEvent | ScanDetectedEvent | DamageTakenEvent | ProximityAlarmEvent | SharkDestroyedEvent | SharkRespawnedEvent;
 
-type LaserFiredEvent = {
+export type LaserFiredEvent = {
     event: 'laserFiredEvent'
     firingSharkId: string
     commandId: string
@@ -24,7 +24,7 @@ type LaserFiredEvent = {
     } | null
 }
 
-type TorpedoDetonatedEvent = {
+export type TorpedoDetonatedEvent = {
     event: 'torpedoDetonatedEvent'
     commandId: string
     firingSharkId: string
@@ -37,14 +37,14 @@ type TorpedoDetonatedEvent = {
     pointsScored: number
 }
 
-type TorpedoLostEvent = {
+export type TorpedoLostEvent = {
     event: 'torpedoLostEvent'
     commandId: string,
     lastKnownPositionX: number
     lastKnownPositionY: number
 }
 
-type NarrowScanExecutedEvent = {
+export type NarrowScanExecutedEvent = {
     event: 'narrowScanExecutedEvent'
     commandId: string
     scanFromX: number
@@ -54,7 +54,7 @@ type NarrowScanExecutedEvent = {
     torpedoes: ScannedTorpedo[]
 }
 
-type WideScanExecutedEvent = {
+export type WideScanExecutedEvent = {
     event: 'wideScanExecutedEvent'
     commandId: string
     centerPointX: number
@@ -71,24 +71,24 @@ type WideScanExecutedEvent = {
     torpedoes: ScannedTorpedo[]
 }
 
-type ScanDetectedEvent = {
+export type ScanDetectedEvent = {
     event: 'scanDetectedEvent'
     sourcePositionX: number
     sourcePositionY: number
 }
 
-type DamageTakenEvent = {
+export type DamageTakenEvent = {
     event: 'damageTakenEvent'
     health: number
     energy: number
     source: DamageSource
 }
 
-type ProximityAlarmEvent = {
+export type ProximityAlarmEvent = {
     event: 'proximityAlarmEvent'
 }
 
-type SharkDestroyedEvent = {
+export type SharkDestroyedEvent = {
     event: 'sharkDestroyedEvent'
     shark: {
         id: string
@@ -96,7 +96,7 @@ type SharkDestroyedEvent = {
     }
 }
 
-type SharkRespawnedEvent = {
+export type SharkRespawnedEvent = {
     event: 'sharkRespawnedEvent'
     shark: {
         id: string
@@ -104,7 +104,7 @@ type SharkRespawnedEvent = {
     }
 }
 
-type ScannedShark = {
+export type ScannedShark = {
     sharkId: string
     name: string
     centerX: number
@@ -114,7 +114,7 @@ type ScannedShark = {
     healthStatus: SharkHealthStatus
 }
 
-type ScannedTorpedo = {
+export type ScannedTorpedo = {
     positionX: number
     positionY: number
     direction: number
