@@ -16,7 +16,9 @@ export type Point = {
 
 export function getAngleDifference(source: number, target: number) { 
     const diff = normalizeAngle(target) - normalizeAngle(source);
-    return diff <= Math.PI ? diff : diff - Math.PI * 2;
+    return diff > Math.PI ? diff - Math.PI * 2
+        : diff < -Math.PI ? diff + Math.PI * 2
+        : diff;
 }
 
 export function getAngleToPoint(

@@ -7,7 +7,14 @@ describe('getAngleDifference', () => {
       target = Math.PI * 2;
 
       expect(getAngleDifference(source, target)).toBe(0);
-});  
+}); 
+
+test('difference between -1 rad and 1 rad is 2', () => {
+  const source = Math.PI * 2 - 1,
+    target = 1;
+
+    expect(getAngleDifference(source, target)).toBe(2);
+});
 
     test('difference between 0 deg and 270 deg is -90', () => {
         const source = 0,
