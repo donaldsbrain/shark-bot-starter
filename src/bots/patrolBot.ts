@@ -78,10 +78,6 @@ export function startPatrolBot(client: PlayerClient, devClient: DevClient | unde
                         sharkId: update.sharkId,
                         statusText: `${currentIndex}`
                     })
-                    devClient.awardPoints({
-                        points: 10,
-                        sharkId: update.sharkId
-                    })
                 });
             }
 

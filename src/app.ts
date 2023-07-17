@@ -34,17 +34,3 @@ const createPlayers = (arenaId: string, sharkNames: string[]) =>
                 }))))
 
 // bot composition root goes here 👇
-
-createDevelopmentArena(12*60, 12*15)
-    .then(({arenaId}) => {
-        console.log(`Arena created: ${arenaId}`);
-        return createPlayers(arenaId, ['BadShark', 'GooShark', 'Bot 3', 'Bot 4', 'Bot 5', 'Bot 6', 'Bot 7', 'Bot 8'])
-    })
-    .then(players => players.length > 0 ? Promise.resolve(players) : Promise.reject('Ruh roh'))
-    .then(playerClients =>  {
-        return DevClient.create({
-            arenaId: playerClients[0].arenaSettings.arenaId,
-            host
-        }).then(devClient => playerClients.forEach(pc => startPatrolBot(pc, devClient)));
-    })
-    .catch(rej => console.error('ERROR!', rej));

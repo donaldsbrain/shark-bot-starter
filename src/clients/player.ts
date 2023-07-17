@@ -61,11 +61,11 @@ type BeatUpdateWithSettings = {
 
 export class PlayerClient {
 
-    private client;
+    private readonly client;
     public readonly arenaSettings;
-    private playerId;
-    private commandRouter;
-    public readonly sharkId;
+    public readonly playerId;
+    private readonly commandRouter;
+    public readonly sharkId;    
     
     private constructor(
         client: Socket<ServerToClientEvents, ClientToServerEvents>, 
@@ -207,7 +207,7 @@ export class PlayerClient {
                     verb: 'GET'
                 }).then(arenaSettings => {
                     const onBeatUpdate = (update: BeatUpdate | DeadBeatUpdate) => {
-                        client.off('beatUpdate', onBeatUpdate);
+                        client.off('beatUpdate', onBeatUpdate);                        
                         const playerClient = new PlayerClient(client, arenaSettings, settings.playerId, update.sharkId);                    
                         resolve(playerClient);
                     }
