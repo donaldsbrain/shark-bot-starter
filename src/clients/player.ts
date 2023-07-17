@@ -62,10 +62,10 @@ type BeatUpdateWithSettings = {
 export class PlayerClient {
 
     private client;
-    private arenaSettings;
+    public readonly arenaSettings;
     private playerId;
     private commandRouter;
-    public sharkId;
+    public readonly sharkId;
     
     private constructor(
         client: Socket<ServerToClientEvents, ClientToServerEvents>, 
@@ -78,6 +78,8 @@ export class PlayerClient {
         this.arenaSettings = arenaSettings;
         this.sharkId = sharkId;
         this.commandRouter = createRouter();
+
+        client.on('commandUpdate', this.commandRouter.route);
     }
 
     public disconnect() {

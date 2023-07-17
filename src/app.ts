@@ -1,100 +1,50 @@
+import { startPatrolBot } from "./bots/patrolBot";
 import { ArenaClient } from "./clients/arena";
-import { startBot1 } from "./bots/bot1";
-import { PlayerClient } from "./clients/player";
 import { DevClient } from "./clients/dev";
-import { startBot2 } from "./bots/bot2";
-import { startBot3 } from "./bots/bot3";
-import { startBot3a } from "./bots/bot3a";
-import { startBot4 } from "./bots/bot4";
-import { startBot5 } from "./bots/bot5";
+import { PlayerClient } from "./clients/player";
 
-const host = 'http://localhost:3000/';
+const host = 'http://192.168.0.48:3000/';
+const arenaClient = ArenaClient.create(host);
 
-const devSettings = {
-    countdownToStart: 12*10,
-    gameLength: 12*60*2
-}
-
-const createPlayers = (arenaId: string, arenaClient: ArenaClient) => 
-    arenaClient.createPlayers(arenaId, [
-        'Defender',
-        'Attacker',
-        // 'Bot 3',
-        // 'Bot 4',
-        // 'Bot 5',
-        // 'Bot 6',
-        // 'Bot 7',
-        // 'Bot 8'
-    ]);
-
-
-const createDevelopmentArenaWithBots = (host: string) => {
-    const arenaClient = ArenaClient.create(host);
-    return arenaClient
-        .createDevelopment(devSettings)
-        .then(arenaCreated => createPlayers(arenaCreated.arenaId, arenaClient)
-            .then(playersCreated => {console.log(arenaCreated, playersCreated); return playersCreated;})
-            .then(playersCreated => ({arenaId: arenaCreated.arenaId, playersCreated})))
-}
-
-const createBotsInExistingArena = (host: string, arenaId: string) => {
-    const arenaClient = ArenaClient.create(host);
-    return createPlayers(arenaId, arenaClient)
-        .then(playersCreated => ({arenaId, playersCreated}))
-}
-
-const startOverWithExisting = (host: string, arenaId: string, playerIds: string[]) => {
-    Promise
-        .all(playerIds
-            .map(playerId => PlayerClient.create({
-                host,
-                arenaId,
-                playerId
-            })))
-        .then(playerClients => {
-            DevClient.create({
-                arenaId,
-                host
-            }).then(devClient => {
-                devClient.resetArena();
-                devClient.clockSlowDown(1);                
-                playerClients
-                    .forEach((pc,i) => {
-                        if (i < 7) {
-                            startBot1(pc, devClient)
-                        }
-                    });                    
-            })
+const createDevelopmentArena = (gameLength: number, countdownLength: number) => 
+    arenaClient
+        .createDevelopment({
+            gameLength: gameLength,
+            countdownToStart: countdownLength
         })
-}
 
-// startOverWithExisting(host, 'FYY-YYY-YYYM', [
-//     '2235946c-ef97-4d90-8565-27638640be23',    
-//     '5b3c77a0-d954-42d8-afb7-9f346625ba36',    
-//     'a3487c2f-c271-4a3d-a563-85b16591e8c1',    
-//     '26fdadc3-f9ce-43d7-aa0a-f2a6c5237394',    
-//     'de09e56a-fe34-45e2-a9fa-cc7863984a0f',    
-//     '7bb42fc4-d392-4cc7-806b-d5f4bda5e5a7',    
-//     '14a10bac-b004-4505-90b7-e2c20e4df795',    
-//     '6530dcc0-0b9e-4f58-80de-58afbdeaa306'
-// ])
 
-createDevelopmentArenaWithBots(host)
-    .then(arenaCreated => {
-        DevClient.create({
-            arenaId: arenaCreated.arenaId,
-            host
-        }).then(devClient => {
-            devClient.tweakPointsPerLivingBeat(0);            
-            // devClient.tweakTorpedoRegenFrequency(1);
-            // devClient.tweakLaserEnergyToll(-1);
-            return Promise.all(arenaCreated.playersCreated.map((player, i) => PlayerClient.create({
-                host,
-                arenaId: arenaCreated.arenaId,
-                playerId: player.playerId
-            }))).then(playerClients => {
-                startBot5(playerClients[0], playerClients[1], devClient);
-            })
+const createPublicArena = (gameLength: number, countdownLength: number) => 
+    arenaClient
+        .createPublic({
+            gameLength: gameLength,
+            countdownToStart: countdownLength
         })
+
+
+const createPlayers = (arenaId: string, sharkNames: string[]) => 
+    arenaClient
+        .createPlayers(arenaId, sharkNames)
+        .then(playersCreated => 
+            Promise.all(playersCreated
+                .map(pc => PlayerClient.create({
+                    host,
+                    arenaId: arenaId,
+                    playerId: pc.playerId
+                }))))
+
+// bot composition root goes here 👇
+
+createDevelopmentArena(12*60, 12*15)
+    .then(({arenaId}) => {
+        console.log(`Arena created: ${arenaId}`);
+        return createPlayers(arenaId, ['BadShark', 'GooShark', 'Bot 3', 'Bot 4', 'Bot 5', 'Bot 6', 'Bot 7', 'Bot 8'])
     })
-    
+    .then(players => players.length > 0 ? Promise.resolve(players) : Promise.reject('Ruh roh'))
+    .then(playerClients =>  {
+        return DevClient.create({
+            arenaId: playerClients[0].arenaSettings.arenaId,
+            host
+        }).then(devClient => playerClients.forEach(pc => startPatrolBot(pc, devClient)));
+    })
+    .catch(rej => console.error('ERROR!', rej));

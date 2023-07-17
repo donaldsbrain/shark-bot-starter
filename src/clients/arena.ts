@@ -1,3 +1,4 @@
+import { ArenaSettings } from "../dto"
 import { sharkRest } from "../utility/comms"
 
 type CreateDevelopmentArena = {    
@@ -11,7 +12,6 @@ type DevelopmentArenaCreated = {
 }
 
 type CreatePublicArena = {
-    arenaType: 'public'
     countdownToStart: number
     gameLength: number
 }
@@ -59,7 +59,14 @@ export class ArenaClient {
         });
     }
 
-    public static create(host: string) {
+    public getArenaSettings(arenaId: string) {
+        return sharkRest<ArenaSettings>({
+            uri: `${this.host}arena/${arenaId}/settings`,
+            verb: 'GET'
+        });
+    }
+
+    public static create(host: string) {        
         return new ArenaClient(host);
     }
 }

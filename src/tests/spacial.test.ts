@@ -1,5 +1,5 @@
-import { describe, it, expect, test } from '@jest/globals';
-import { getAngleDifference, getAngleToPoint, getDistance, getNextMoveToAngle } from '../domain/spacial';
+import { describe, expect, test } from '@jest/globals';
+import { getAngleDifference, getAngleToPoint, getDistance, getNewPosition, getNextMoveToAngle } from '../domain/spacial';
 
 describe('getAngleDifference', () => {
   test('difference between 0 rad and 2PI deg is 0', () => {
@@ -114,6 +114,26 @@ describe('getDistance', () => {
       b = {x:6,y:7};
     expect(getDistance(a, b)).toBe(5);    
   });
+});
+
+describe('getNewPosition', () => {
+  test('3, 4, 5 triangle', () => {
+    const newPosition = getNewPosition({x:-1,y:-1}, 0.9273, 5);
+    expect(newPosition.x).toBeCloseTo(3);
+    expect(newPosition.y).toBeCloseTo(2);
+  })
+
+  test('1000 random getDistance values', () => {    
+    for (let i = 0; i < 1000; i++) {
+      const angle = Math.random() * Math.PI * 8 - Math.PI * 4;
+      const x = Math.random() * 2000 - 1000;
+      const y = Math.random() * 2000 - 1000;
+      const distance = Math.random() * 1000;
+      const newPosition = getNewPosition({x,y}, angle, distance);
+      const calculatedDistance = getDistance({x,y}, newPosition);
+      expect(calculatedDistance).toBeCloseTo(distance);
+    }
+  })
 });
 
 describe('getNextMoveToAngle', () => {
